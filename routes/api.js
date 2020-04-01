@@ -3,7 +3,8 @@ const request = require('request-promise')
 
 const router = Router();
 
-const url = "https://api.covid19india.org/state_district_wise.json";
+const urlStateWise = "https://api.covid19india.org/state_district_wise.json";
+const urlCounryWise = "https://api.covid19india.org/data.json"
 
 const arrStateMapping = {
     "Andaman and Nicobar Islands": 1,
@@ -44,12 +45,31 @@ const arrStateMapping = {
     "Telangana": 37
 }
 
+
+
 /* GET index page. */
 router.get('/get-covid-india', async (req, res, next) => {
 
     try{
-        let apiData = await request({
-            uri: url,
+        //Getting all countrywise details from API
+        let objCountryRawData = await request({
+            uri: urlCounryWise,
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json;',
+
+            },
+            json: true
+        });
+        const {statewise} = objCountryRawData
+        const intCountryTotalConfirmed = parseInt(statewise[0].confirmed)
+        const intCountryTotalActive = parseInt(statewise[0].active)
+        const intCountryTotalDeaths = parseInt(statewise[0].deaths)
+        const intMaxConfirmedCount = parseInt(statewise[1].confirmed)
+
+        //Getting the raw state wise data from API
+        let objRawData = await request({
+            uri: urlStateWise,
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json;',
@@ -58,8 +78,7 @@ router.get('/get-covid-india', async (req, res, next) => {
             json: true
         });
 
-        const arrRawData = Object.entries(apiData)
-
+        const arrRawData = Object.entries(objRawData)
         let arrStateDetails = []
         let strState
         let intStateId
@@ -69,6 +88,8 @@ router.get('/get-covid-india', async (req, res, next) => {
         let strDescription = ""
         let strDistrict
         let strConfirmed
+        let strStateColor
+
         arrRawData.forEach((arrState) => {
             strState = arrState[0]
             intStateId = arrStateMapping[strState]
@@ -85,15 +106,35 @@ router.get('/get-covid-india', async (req, res, next) => {
             strDescription += tmpDescription
             tmpDescription = ""
 
+            let intCountRange = intMaxConfirmedCount / 5 
+            let intMaxCounter = 0 
+            let intMinCounter = 0
+            const arrColors = ['#FDD5C3','#FCA487','#FA7051','#E8382C','#BB151A']
+            for(let i=0; i<=4 ; i++){
+                intMaxCounter += intCountRange
+                if(intConfirmed >=intMinCounter &&  intConfirmed <= intMaxCounter){
+                    strStateColor = arrColors[i]
+                }
+                intMinCounter += intCountRange
+            }
+            
+            //console.log(dblCountRatio)
+            
+            //getting the state color by counts
+            
+            
             objStateDetails = {
-                    name: strState,
-                    description: strDescription,
-                    color: "red",
+                    name: "<u>"+strState+ "</u>",
+                    description: "<br/><label style='color:red'>Total Confirmed: "+intConfirmed +"</label><br/>" +strDescription,
+                    color: strStateColor,
                     zoomable: "no"
             }
             arrStateDetails[intStateId] = objStateDetails
+
+            intMaxCount = 
             intConfirmed = 0
             strDescription = ""
+            strStateColor = ""
         });
         //console.log(arrStateDetails)
         res.send(arrStateDetails)

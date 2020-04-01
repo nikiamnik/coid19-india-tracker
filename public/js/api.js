@@ -4,7 +4,7 @@ if(screen.width <= 768) {
     intScreenWidth = (screen.width*80) / 100
 }
 
-alert(intScreenWidth)
+
 var simplemaps_countrymap_mapdata={
     main_settings: {
      //General settings
@@ -97,6 +97,7 @@ const __intMap = ()  => {
            $('body').loading('stop');
            simplemaps_countrymap_mapdata.state_specific = data
            simplemaps_countrymap.load();
+           $('#map #map_holder #map_inner div text').find('tspan').remove()
         }
      });
 }
@@ -105,4 +106,6 @@ const __intMap = ()  => {
 $(document).ready(() => {
     $("#sidebarToggle").click()
     __intMap();
+
+    
 })

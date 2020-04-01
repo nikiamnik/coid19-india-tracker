@@ -65,6 +65,10 @@ router.get('/get-covid-india', async (req, res, next) => {
         let intStateId
         let objStateDetails
         let intConfirmed = 0
+        let tmpDescription = ""
+        let strDescription = ""
+        let strDistrict
+        let strConfirmed
         arrRawData.forEach((arrState) => {
             strState = arrState[0]
             intStateId = arrStateMapping[strState]
@@ -72,17 +76,24 @@ router.get('/get-covid-india', async (req, res, next) => {
             const arrDistricts = Object.entries(arrState[1]['districtData'])
             
             arrDistricts.forEach((arrDistrict) => {
-                intConfirmed += parseInt(arrDistrict[1].confirmed)
+                strDistrict = arrDistrict[0]
+                strConfirmed = arrDistrict[1].confirmed
+                tmpDescription +=  strDistrict+": "+strConfirmed+ "<br/>"
+                intConfirmed += parseInt(strConfirmed)
             })
+
+            strDescription += tmpDescription
+            tmpDescription = ""
 
             objStateDetails = {
                     name: strState,
-                    description: "Count: "+ intConfirmed,
+                    description: strDescription,
                     color: "red",
                     zoomable: "no"
             }
             arrStateDetails[intStateId] = objStateDetails
             intConfirmed = 0
+            strDescription = ""
         });
         //console.log(arrStateDetails)
         res.send(arrStateDetails)
@@ -94,12 +105,6 @@ router.get('/get-covid-india', async (req, res, next) => {
             message: error.message
         })
     }
-
-    
-
-    //res.send(apiData)
-    
-    //console.log(apiData)
 
 });
 

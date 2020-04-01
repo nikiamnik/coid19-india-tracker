@@ -1,7 +1,7 @@
 let intScreenWidth = (screen.width*30) / 100
 
 if(screen.width <= 768) {
-    intScreenWidth = (screen.width*70) / 100
+    intScreenWidth = (screen.width*80) / 100
 }
 
 alert(intScreenWidth)

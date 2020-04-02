@@ -65,6 +65,7 @@ router.get('/get-covid-india', async (req, res, next) => {
         const intCountryTotalConfirmed = parseInt(statewise[0].confirmed)
         const intCountryTotalActive = parseInt(statewise[0].active)
         const intCountryTotalDeaths = parseInt(statewise[0].deaths)
+        const intCountryTotalRecovered = parseInt(statewise[0].recovered)
         const intMaxConfirmedCount = parseInt(statewise[1].confirmed)
 
         //Getting the raw state wise data from API
@@ -118,11 +119,6 @@ router.get('/get-covid-india', async (req, res, next) => {
                 intMinCounter += intCountRange
             }
             
-            //console.log(dblCountRatio)
-            
-            //getting the state color by counts
-            
-            
             objStateDetails = {
                     name: "<u>"+strState+ "</u>",
                     description: "<br/><label style='color:red'>Total Confirmed: "+intConfirmed +"</label><br/>" +strDescription,
@@ -136,8 +132,17 @@ router.get('/get-covid-india', async (req, res, next) => {
             strDescription = ""
             strStateColor = ""
         });
-        //console.log(arrStateDetails)
-        res.send(arrStateDetails)
+
+        let arrReturn = {
+            'stateDetails': arrStateDetails,
+            intCountryTotalConfirmed,
+            intCountryTotalActive,
+            intCountryTotalDeaths,
+            intCountryTotalRecovered
+        }
+        
+        
+        res.send(arrReturn)
         
     }catch(error){
         console.log(error)

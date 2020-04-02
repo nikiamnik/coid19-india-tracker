@@ -95,10 +95,16 @@ const __intMap = ()  => {
         url:"/api/get-covid-india",
         method: "GET",
         success:function(data) {
+           
            $('body').loading('stop');
-           simplemaps_countrymap_mapdata.state_specific = data
+           simplemaps_countrymap_mapdata.state_specific = data.stateDetails
            simplemaps_countrymap.load();
            $('#map #map_holder #map_inner div text').find('tspan').remove()
+           $('#spanConfirmed').html(data.intCountryTotalConfirmed)
+           $('#spanActive').html(data.intCountryTotalActive)
+           $('#spanDeath').html(data.intCountryTotalDeaths)
+           $('#spanRecovered').html(data.intCountryTotalRecovered)
+           
         }
      });
 }
